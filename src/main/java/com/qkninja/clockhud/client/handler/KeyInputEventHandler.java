@@ -3,26 +3,23 @@ package com.qkninja.clockhud.client.handler;
 import com.qkninja.clockhud.client.settings.KeyBindings;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Key;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * Handles all results for keyboard events.
  */
-public class KeyInputEventHandler
-{
+public class KeyInputEventHandler {
 
-    private static Key getPressedKeyBinding()
-    {
+    private static Key getPressedKeyBinding() {
         if (KeyBindings.TOGGLE.isPressed())
             return Key.TOGGLE;
         else return Key.UNKNOWN;
     }
 
     @SubscribeEvent
-    public void handleKeyInputEvent(InputEvent.KeyInputEvent event)
-    {
+    public void handleKeyInputEvent(InputEvent.KeyInputEvent event) {
         if (getPressedKeyBinding() == Key.TOGGLE)
-            ConfigValues.guiActive = !ConfigValues.guiActive;
+            ConfigValues.INS.guiActive.set(!ConfigValues.INS.guiActive.get());
     }
 }

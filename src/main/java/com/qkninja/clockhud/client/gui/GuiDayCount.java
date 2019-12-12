@@ -1,33 +1,32 @@
 package com.qkninja.clockhud.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Names;
 import com.qkninja.clockhud.reference.Reference;
 import com.qkninja.clockhud.utility.Algorithms;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.AbstractGui;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
 
 /**
  * Renders the day count on the screen after each new day.
  *
  * @author Sam Beckmann
  */
-public class GuiDayCount extends Gui
-{
+public class GuiDayCount extends AbstractGui {
     private Minecraft mc;
 
     private long endAnimationTime;
     private boolean isRunning;
     private static final int ANIMATION_TIME = 3000; // 3 second animation
 
-    public GuiDayCount(Minecraft mc)
-    {
+    public GuiDayCount(Minecraft mc) {
         super();
         isRunning = false;
         this.mc = mc;
@@ -39,21 +38,20 @@ public class GuiDayCount extends Gui
      * @param event variables associated with the event.
      */
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onRenderExperienceBar(RenderGameOverlayEvent.Post event)
-    {
-        if (ConfigValues.showDayCount && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE &&
-                (isRunning || isNewDay()))
-        {
-            long currentTime = Minecraft.getSystemTime();
+    public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
+        if (ConfigValues.INS.showDayCount.get() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE &&
+                (isRunning || isNewDay())) {
 
-            if (isRunning && currentTime >= endAnimationTime)
-            {
+            // long currentTime = Minecraft.getSystemTime();
+
+            long currentTime = System.nanoTime() / 1000000;
+
+            if (isRunning && currentTime >= endAnimationTime) {
                 isRunning = false;
                 return;
             }
 
-            if (!isRunning)
-            {
+            if (!isRunning) {
                 isRunning = true;
                 endAnimationTime = currentTime + ANIMATION_TIME;
             }
@@ -61,18 +59,16 @@ public class GuiDayCount extends Gui
             float scaleFactor = getScaleFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME);
             String dayString = formDayString();
 
-            GlStateManager.scale(scaleFactor, scaleFactor, scaleFactor);
-
-            ScaledResolution scaled = new ScaledResolution(mc);
+            GlStateManager.scalef(scaleFactor, scaleFactor, scaleFactor);
 
             int alpha = Math.max(getOpacityFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME), 5);
             int color = (alpha << 24) | 0xffffff;
-            float xPos = (scaled.getScaledWidth() - mc.fontRenderer.getStringWidth(dayString) * scaleFactor) / (2 * scaleFactor);
-            float yPos = scaled.getScaledHeight() / 7 / scaleFactor;
+            float xPos = (Minecraft.getInstance().mainWindow.getScaledWidth() - mc.fontRenderer.getStringWidth(dayString) * scaleFactor) / (2 * scaleFactor);
+            float yPos = Minecraft.getInstance().mainWindow.getScaledHeight() / 7 / scaleFactor;
 
-            mc.fontRenderer.drawString(dayString, xPos, yPos, color, false);
+            mc.fontRenderer.drawString(dayString, xPos, yPos, color);
 
-            GlStateManager.scale(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
+            GlStateManager.scalef(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
         }
     }
 
@@ -81,9 +77,8 @@ public class GuiDayCount extends Gui
      *
      * @return if the dayTime is the specified time of a new day.
      */
-    private boolean isNewDay()
-    {
-        return Minecraft.getMinecraft().world.getWorldTime() % Reference.DAY_TICKS == Reference.NEW_DAY_TICK;
+    private boolean isNewDay() {
+        return Minecraft.getInstance().world.getDayTime() % Reference.DAY_TICKS == Reference.NEW_DAY_TICK;
     }
 
     /**
@@ -91,9 +86,8 @@ public class GuiDayCount extends Gui
      *
      * @return String of "Day: " + day number
      */
-    private String formDayString()
-    {
-        return I18n.format(Names.Text.DAYCOUNT, Minecraft.getMinecraft().world.getTotalWorldTime() / Reference.DAY_TICKS);
+    private String formDayString() {
+        return I18n.format(Names.Text.DAYCOUNT, Minecraft.getInstance().world.getGameTime() / Reference.DAY_TICKS);
     }
 
     /**
@@ -103,8 +97,7 @@ public class GuiDayCount extends Gui
      * @param percentRemaining scaled value between 0-1 indicating percent of the animation remaining.
      * @return Value evenly scaled between 2 and 2.5 based on input.
      */
-    private float getScaleFactor(float percentRemaining)
-    {
+    private float getScaleFactor(float percentRemaining) {
         return 2.5F - percentRemaining / 2;
     }
 
@@ -115,8 +108,7 @@ public class GuiDayCount extends Gui
      * @param percentRemaining scaled value between 0-1 indicating percent of the animation remaining.
      * @return value between 0 and 255, indicating alpha value.
      */
-    private int getOpacityFactor(float percentRemaining)
-    {
+    private int getOpacityFactor(float percentRemaining) {
         if (percentRemaining > .8)
             return (int) (255 * (0.8 - Algorithms.scale(percentRemaining, 0.8, 1, 0, 0.8)));
         else if (percentRemaining < .2)

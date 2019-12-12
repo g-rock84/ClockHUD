@@ -2,9 +2,8 @@ package com.qkninja.clockhud.client.settings;
 
 import com.qkninja.clockhud.reference.Names;
 import net.minecraft.client.settings.KeyBinding;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
-public class KeyBindings
-{
-    public static final KeyBinding TOGGLE = new KeyBinding(Names.Keys.TOGGLE, Keyboard.KEY_COMMA, Names.Keys.CATEGORY);
+public class KeyBindings {
+    public static final KeyBinding TOGGLE = new KeyBinding(Names.Keys.TOGGLE, GLFW.GLFW_KEY_COMMA, Names.Keys.CATEGORY);
 }
