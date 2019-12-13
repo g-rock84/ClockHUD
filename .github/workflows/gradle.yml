@@ -1,12 +1,8 @@
-name: Java CI
+name: build mod
 
 on:
   page_build:
-    branches:
-      - 1.14.4
   release:
-    branches:
-      - 1.14.4
     types: # This configuration does not affect the page_build event above
       - created
 
