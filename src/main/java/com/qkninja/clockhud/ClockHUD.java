@@ -1,42 +1,53 @@
 package com.qkninja.clockhud;
 
-import com.qkninja.clockhud.client.handler.KeyInputEventHandler;
 import com.qkninja.clockhud.handler.ConfigurationHandler;
+import com.qkninja.clockhud.proxy.ClientProxy;
 import com.qkninja.clockhud.proxy.CommonProxy;
 import com.qkninja.clockhud.reference.Reference;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A simple clock GUI to make telling the time easier.
+ *
  * @author QKninja
  */
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, acceptedMinecraftVersions="[1.12,1.13)", guiFactory = Reference.GUI_FACTORY_CLASS)
-public class ClockHUD
-{
-    @Mod.Instance(Reference.MOD_ID)
+@Mod(value = Reference.MOD_ID)
+public class ClockHUD {
+    // Directly reference a log4j logger.
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public static ClockHUD instance;
 
-    @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
-    public static CommonProxy proxy;
+    public ClockHUD() {
+        ConfigurationHandler.init();
+        //ConfigurationHandler.load();
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        ConfigurationHandler.init(event.getSuggestedConfigurationFile());
-        MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
+        // Register the setup method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
+        // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        instance = this;
+    }
+
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ClientProxy::new);
+
+
+    private void setup(final FMLCommonSetupEvent event) {
+        LOGGER.info("ClockHUD PREINIT");
         proxy.preInit();
     }
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        // do something that can only be done on the client
+        //LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
         proxy.init();
-
-        MinecraftForge.EVENT_BUS.register(new KeyInputEventHandler());
     }
+
 }

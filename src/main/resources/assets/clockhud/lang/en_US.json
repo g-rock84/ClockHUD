@@ -1,0 +1,5 @@
+{
+  "keys.clockhud.category": "Clock HUD",
+  "keys.clockhud.toggle": "Toggle Clock",
+  "clockhud.daycount": "Day: %d"
+}
