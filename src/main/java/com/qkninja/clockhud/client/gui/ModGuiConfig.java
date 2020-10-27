@@ -1,6 +1,7 @@
 package com.qkninja.clockhud.client.gui;
 
 import com.qkninja.clockhud.reference.ConfigValues;
+import com.qkninja.clockhud.reference.Names;
 import com.qkninja.clockhud.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -20,9 +21,15 @@ import java.util.function.Consumer;
 @OnlyIn(Dist.CLIENT)
 public class ModGuiConfig extends Screen {
 
-    private Screen parent;
+    private final Screen parent;
+    private final Minecraft mc;
 
-    private Minecraft mc;
+    public CheckboxButton guiActiveControl;// = true;
+    public CheckboxButton showDayCountControl;// = true;
+    public CheckboxButton centerClockControl;// = false;
+    public TextFieldWidget xCoordControl;// = 2;
+    public TextFieldWidget yCoordControl;// = 2;
+    public TextFieldWidget scaleControl;//= .7F;
 
     public ModGuiConfig(Minecraft mc, Screen parent) {
         super(new StringTextComponent(""));
@@ -33,42 +40,29 @@ public class ModGuiConfig extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         this.renderBackground();
-
-
         super.render(mouseX, mouseY, partialTicks);
-        font.drawString("xCoord", xCoordControl.x - 50, xCoordControl.y, 0xFFFFFF);
+        font.drawString(I18n.format(Names.Config.X_COORD), xCoordControl.x - 50, xCoordControl.y, 0xFFFFFF);
         xCoordControl.render(mouseX, mouseY, partialTicks);
-        font.drawString("yCoord", yCoordControl.x - 50, yCoordControl.y, 0xFFFFFF);
+        font.drawString(I18n.format(Names.Config.Y_COORD), yCoordControl.x - 50, yCoordControl.y, 0xFFFFFF);
         yCoordControl.render(mouseX, mouseY, partialTicks);
-        font.drawString("scale", scaleControl.x - 50, scaleControl.y, 0xFFFFFF);
+        font.drawString(I18n.format(Names.Config.SCALE), scaleControl.x - 50, scaleControl.y, 0xFFFFFF);
         scaleControl.render(mouseX, mouseY, partialTicks);
     }
 
-
-    public CheckboxButton guiActiveControl;// = true;
-    public CheckboxButton showDayCountControl;// = true;
-    public CheckboxButton centerClockControl;// = false;
-
-    public TextFieldWidget xCoordControl;// = 2;
-    public TextFieldWidget yCoordControl;// = 2;
-    public TextFieldWidget scaleControl;//= .7F;
-
-
     @Override
     public void init() {
-
         int y = 2;
         int margin = 22;
         guiActiveControl = new CheckboxButton(this.width / 2 - 100, y, 200, 20,
-                "guiActive", ConfigValues.INS.guiActive.get());
+                I18n.format(Names.Config.GUI_ACTIVE), ConfigValues.INS.guiActive.get());
         this.addButton(guiActiveControl);
         y += margin;
         showDayCountControl = new CheckboxButton(this.width / 2 - 100, y, 200, 20,
-                "showDayCount", ConfigValues.INS.showDayCount.get());
+                I18n.format(Names.Config.SHOW_DAY_COUNT), ConfigValues.INS.showDayCount.get());
         this.addButton(showDayCountControl);
         y += margin;
         centerClockControl = new CheckboxButton(this.width / 2 - 100, y, 200, 20,
-                "centerClock", ConfigValues.INS.centerClock.get());
+                I18n.format(Names.Config.CENTER_CLOCK), ConfigValues.INS.centerClock.get());
 
         this.addButton(centerClockControl);
 
@@ -87,27 +81,28 @@ public class ModGuiConfig extends Screen {
 
         y += margin;
         this.addButton(new Button(this.width / 2 - 100, y, 200, 20,
-                I18n.format("save"), this::save));
+                I18n.format(Names.Config.SAVE), this::save));
         y += margin;
         this.addButton(new Button(this.width / 2 - 100, y, 200, 20,
                 I18n.format("gui.done"), b -> mc.displayGuiScreen(parent)));
         y += margin;
         this.addButton(new Button(this.width / 2 - 100, y, 200, 20,
-                "open cfg", b -> Util.getOSType().openFile(FMLPaths.CONFIGDIR.get().resolve(Reference.MOD_ID + "-client.toml").toFile())));
+                I18n.format(Names.Config.OPEN_CONFIG_FILE), this::openConfigFile));
 
     }
 
+    private void openConfigFile(Button btn) {
+        Util.getOSType().openFile(FMLPaths.CONFIGDIR.get().resolve(Reference.MOD_ID + "-client.toml").toFile());
+    }
+
     private void save(Button button) {
-
-        ConfigValues.INS.guiActive.set(guiActiveControl.func_212942_a());
-        ConfigValues.INS.showDayCount.set(showDayCountControl.func_212942_a());
-        ConfigValues.INS.centerClock.set(centerClockControl.func_212942_a());
-
+        ConfigValues.INS.guiActive.set(guiActiveControl.isChecked());
+        ConfigValues.INS.showDayCount.set(showDayCountControl.isChecked());
+        ConfigValues.INS.centerClock.set(centerClockControl.isChecked());
 
         safeParseInt(xCoordControl.getText(), s -> {
             xCoordControl.setText(ConfigValues.INS.xCoord.get() + "");
         }).ifPresent(ConfigValues.INS.xCoord::set);
-
 
         safeParseInt(yCoordControl.getText(), s -> {
             yCoordControl.setText(ConfigValues.INS.yCoord.get() + "");
@@ -116,8 +111,6 @@ public class ModGuiConfig extends Screen {
         safeParseDouble(scaleControl.getText(), s -> {
             scaleControl.setText(ConfigValues.INS.scale.get() + "");
         }).ifPresent(ConfigValues.INS.scale::set);
-
-
     }
 
     private Optional<Integer> safeParseInt(String str, Consumer<String> onError) {
@@ -139,6 +132,5 @@ public class ModGuiConfig extends Screen {
         }
         return Optional.ofNullable(value);
     }
-
 
 }

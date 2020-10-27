@@ -1,13 +1,13 @@
 package com.qkninja.clockhud.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Names;
 import com.qkninja.clockhud.reference.Reference;
 import com.qkninja.clockhud.utility.Algorithms;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,11 +20,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  * @author Sam Beckmann
  */
 public class GuiDayCount extends AbstractGui {
+    private static final int ANIMATION_TIME = 3000; // 3 second animation
     private Minecraft mc;
-
     private long endAnimationTime;
     private boolean isRunning;
-    private static final int ANIMATION_TIME = 3000; // 3 second animation
 
     public GuiDayCount(Minecraft mc) {
         super();
@@ -40,10 +39,7 @@ public class GuiDayCount extends AbstractGui {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
         if (ConfigValues.INS.showDayCount.get() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE &&
-                (isRunning || isNewDay())) {
-
-            // long currentTime = Minecraft.getSystemTime();
-
+            (isRunning || isNewDay())) {
             long currentTime = System.nanoTime() / 1000000;
 
             if (isRunning && currentTime >= endAnimationTime) {
@@ -59,16 +55,14 @@ public class GuiDayCount extends AbstractGui {
             float scaleFactor = getScaleFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME);
             String dayString = formDayString();
 
-            GlStateManager.scalef(scaleFactor, scaleFactor, scaleFactor);
-
+            RenderSystem.scalef(scaleFactor, scaleFactor, scaleFactor);
+            MainWindow mainWindow = event.getWindow();
             int alpha = Math.max(getOpacityFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME), 5);
             int color = (alpha << 24) | 0xffffff;
-            float xPos = (Minecraft.getInstance().mainWindow.getScaledWidth() - mc.fontRenderer.getStringWidth(dayString) * scaleFactor) / (2 * scaleFactor);
-            float yPos = Minecraft.getInstance().mainWindow.getScaledHeight() / 7 / scaleFactor;
-
-            mc.fontRenderer.drawString(dayString, xPos, yPos, color);
-
-            GlStateManager.scalef(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
+            float xPos = (mainWindow.getScaledWidth() - this.mc.fontRenderer.getStringWidth(dayString) * scaleFactor) / (2 * scaleFactor);
+            float yPos = mainWindow.getScaledHeight() / 7F / scaleFactor;
+            this.mc.fontRenderer.drawString(dayString, xPos, yPos, color);
+            RenderSystem.scalef(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
         }
     }
 

@@ -1,5 +1,13 @@
 {
   "keys.clockhud.category": "Clock HUD",
   "keys.clockhud.toggle": "Toggle Clock",
-  "clockhud.daycount": "Day: %d"
+  "clockhud.daycount": "Day: %d",
+  "config.clockhud.xCoord": "xCoord",
+  "config.clockhud.yCoord": "yCoord",
+  "config.clockhud.scale": "scale",
+  "config.clockhud.guiActive": "guiActive",
+  "config.clockhud.showDayCount": "showDayCount",
+  "config.clockhud.centerClock": "centerClock",
+  "config.clockhud.save": "save",
+  "config.clockhud.openConfigFile": "openConfigFile"
 }

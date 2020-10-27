@@ -1,5 +1,13 @@
 {
   "keys.clockhud.category": "Clock HUD",
   "keys.clockhud.toggle": "关闭/显示时间",
-  "clockhud.daycount": "恭喜你活到了第%d天"
+  "clockhud.daycount": "恭喜你活到了第%d天",
+  "config.clockhud.xCoord": "x坐标",
+  "config.clockhud.yCoord": "y坐标",
+  "config.clockhud.scale": "缩放",
+  "config.clockhud.guiActive": "启用时间显示",
+  "config.clockhud.showDayCount": "启用天数显示",
+  "config.clockhud.centerClock": "居中显示",
+  "config.clockhud.save": "保存",
+  "config.clockhud.openConfigFile": "打开配置文件"
 }

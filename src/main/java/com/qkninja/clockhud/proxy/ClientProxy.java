@@ -29,15 +29,14 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit() {
-        registerKeyBindings();
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ModGuiConfig::new);
     }
 
     @Override
     public void init() {
         registerRenderers();
-
+        registerKeyBindings();
         MinecraftForge.EVENT_BUS.register(new KeyInputEventHandler());
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> ModGuiConfig::new);
     }
 
     @Override

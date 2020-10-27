@@ -1,11 +1,12 @@
 package com.qkninja.clockhud.client.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Reference;
 import com.qkninja.clockhud.reference.Textures;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -24,7 +25,7 @@ public class GuiClock extends AbstractGui {
     private static final int BAR_HEIGHT = 10 / TEXTURE_SCALE;
     private static final int DOT = 10 / TEXTURE_SCALE;
 
-    private Minecraft mc;
+    private final Minecraft mc;
 
     public GuiClock(Minecraft mc) {
         super();
@@ -43,12 +44,11 @@ public class GuiClock extends AbstractGui {
             return;
 
         this.mc.getTextureManager().bindTexture(Textures.Gui.HUD);
-
-        GlStateManager.scaled(ConfigValues.INS.scale.get(), ConfigValues.INS.scale.get(), ConfigValues.INS.scale.get());
+        RenderSystem.scaled(ConfigValues.INS.scale.get(), ConfigValues.INS.scale.get(), ConfigValues.INS.scale.get());
 
         int xCoord;
         if (ConfigValues.INS.centerClock.get()) {
-            xCoord = (int) ((Minecraft.getInstance().mainWindow.getScaledWidth() - (BAR_LENGTH + SUN_WIDTH - DOT) * ConfigValues.INS.scale.get()) / (2 * ConfigValues.INS.scale.get()));
+            xCoord = (int) ((event.getWindow().getScaledWidth() - (BAR_LENGTH + SUN_WIDTH - DOT) * ConfigValues.INS.scale.get()) / (2 * ConfigValues.INS.scale.get()));
         } else {
             xCoord = ConfigValues.INS.xCoord.get();
         }
@@ -69,7 +69,7 @@ public class GuiClock extends AbstractGui {
                     ConfigValues.INS.yCoord.get(), SUN_WIDTH, BAR_HEIGHT, MOON_WIDTH, ICON_HEIGHT);
         }
 
-        GlStateManager.scaled(1 / ConfigValues.INS.scale.get(), 1 / ConfigValues.INS.scale.get(), 1 / ConfigValues.INS.scale.get());
+        RenderSystem.scaled(1 / ConfigValues.INS.scale.get(), 1 / ConfigValues.INS.scale.get(), 1 / ConfigValues.INS.scale.get());
     }
 
     /**
@@ -112,7 +112,7 @@ public class GuiClock extends AbstractGui {
      * @return Current tick of the day.
      */
     private int getCurrentTime() {
-        World world = Minecraft.getInstance().world;
+        World world = this.mc.world;
         long time = world.getWorldInfo().getDayTime();
         return (int) time % Reference.DAY_TICKS;
     }
