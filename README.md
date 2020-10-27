@@ -1,12 +1,8 @@
 # Clock HUD [![](http://cf.way2muchnoise.eu/full_226364_downloads.svg)](https://minecraft.curseforge.com/projects/clock-hud)
 
+v 2.0.0  add 1.14.4 with forge
 
-### About this fork
-update to mc 1.14.4 with forge
-
-version 2.0.0 Alpha
-
-test mod downlaod: github action tab>build list>artifact
+v 2.1.0  add 1.15.2 with forge
 
 
 ### What is it?
