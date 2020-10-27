@@ -4,6 +4,7 @@ v 2.0.0  add 1.14.4 with forge
 
 v 2.1.0  add 1.15.2 with forge
 
+v 2.2.0  add 1.16.3 with forge
 
 ### What is it?
 Clock HUD is a modification for the game Minecraft that that adds a simple clock to your heads up display.

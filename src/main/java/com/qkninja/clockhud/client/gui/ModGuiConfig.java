@@ -1,11 +1,15 @@
 package com.qkninja.clockhud.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Names;
 import com.qkninja.clockhud.reference.Reference;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.CheckboxButton;
 import net.minecraft.client.resources.I18n;
@@ -37,57 +41,72 @@ public class ModGuiConfig extends Screen {
         this.mc = mc;
     }
 
+    //render
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format(Names.Config.X_COORD), xCoordControl.x - 50, xCoordControl.y, 0xFFFFFF);
-        xCoordControl.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format(Names.Config.Y_COORD), yCoordControl.x - 50, yCoordControl.y, 0xFFFFFF);
-        yCoordControl.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format(Names.Config.SCALE), scaleControl.x - 50, scaleControl.y, 0xFFFFFF);
-        scaleControl.render(mouseX, mouseY, partialTicks);
+    public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        //renderBackground
+        super.func_230446_a_(matrixStack);
+        //render
+        super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+
+        FontRenderer fontRenderer = this.field_230712_o_;
+        //drawString
+        fontRenderer.func_238421_b_(matrixStack, I18n.format(Names.Config.X_COORD), xCoordControl.field_230690_l_ - 50, xCoordControl.field_230691_m_, 0xFFFFFF);
+        //render
+        xCoordControl.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+        //drawString
+        fontRenderer.func_238421_b_(matrixStack, I18n.format(Names.Config.Y_COORD), yCoordControl.field_230690_l_ - 50, yCoordControl.field_230691_m_, 0xFFFFFF);
+        //render
+        yCoordControl.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+        //drawString
+        fontRenderer.func_238421_b_(matrixStack, I18n.format(Names.Config.SCALE), scaleControl.field_230690_l_ - 50, scaleControl.field_230691_m_, 0xFFFFFF);
+        //render
+        scaleControl.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    public void init() {
+    //init
+    public void func_231160_c_() {
         int y = 2;
         int margin = 22;
-        guiActiveControl = new CheckboxButton(this.width / 2 - 100, y, 200, 20,
-                I18n.format(Names.Config.GUI_ACTIVE), ConfigValues.INS.guiActive.get());
-        this.addButton(guiActiveControl);
-        y += margin;
-        showDayCountControl = new CheckboxButton(this.width / 2 - 100, y, 200, 20,
-                I18n.format(Names.Config.SHOW_DAY_COUNT), ConfigValues.INS.showDayCount.get());
-        this.addButton(showDayCountControl);
-        y += margin;
-        centerClockControl = new CheckboxButton(this.width / 2 - 100, y, 200, 20,
-                I18n.format(Names.Config.CENTER_CLOCK), ConfigValues.INS.centerClock.get());
+        int width = this.field_230708_k_;//width
+        FontRenderer fontRenderer = this.field_230712_o_;
 
-        this.addButton(centerClockControl);
+        guiActiveControl = new CheckboxButton(width / 2 - 100, y, 200, 20,
+                new StringTextComponent(I18n.format(Names.Config.GUI_ACTIVE)), ConfigValues.INS.guiActive.get());
+        this.addWidget(guiActiveControl);
+        y += margin;
+        showDayCountControl = new CheckboxButton(width / 2 - 100, y, 200, 20,
+                new StringTextComponent(I18n.format(Names.Config.SHOW_DAY_COUNT)), ConfigValues.INS.showDayCount.get());
+        this.addWidget(showDayCountControl);
+        y += margin;
+        centerClockControl = new CheckboxButton(width / 2 - 100, y, 200, 20,
+                new StringTextComponent(I18n.format(Names.Config.CENTER_CLOCK)), ConfigValues.INS.centerClock.get());
+
+        this.addWidget(centerClockControl);
 
         y += margin;
-        xCoordControl = new TextFieldWidget(font, this.width / 2 - 50, y, 140, 14, "xCoord");
+        xCoordControl = new TextFieldWidget(fontRenderer, width / 2 - 50, y, 140, 14, new StringTextComponent(I18n.format(Names.Config.X_COORD)));
         xCoordControl.setText(ConfigValues.INS.xCoord.get() + "");
-        this.children.add(xCoordControl);
+        this.addChild(xCoordControl);
         y += margin;
-        yCoordControl = new TextFieldWidget(font, this.width / 2 - 50, y, 140, 14, "yCoord");
+        yCoordControl = new TextFieldWidget(fontRenderer, width / 2 - 50, y, 140, 14, new StringTextComponent(I18n.format(Names.Config.Y_COORD)));
         yCoordControl.setText(ConfigValues.INS.yCoord.get() + "");
-        this.children.add(yCoordControl);
+        this.addChild(yCoordControl);
         y += margin;
-        scaleControl = new TextFieldWidget(font, this.width / 2 - 50, y, 140, 14, "scale");
+        scaleControl = new TextFieldWidget(fontRenderer, width / 2 - 50, y, 140, 14, new StringTextComponent(I18n.format(Names.Config.SCALE)));
         scaleControl.setText(ConfigValues.INS.scale.get() + "");
-        this.children.add(scaleControl);
+        this.addChild(scaleControl);
 
         y += margin;
-        this.addButton(new Button(this.width / 2 - 100, y, 200, 20,
-                I18n.format(Names.Config.SAVE), this::save));
+        this.addWidget(new Button(width / 2 - 100, y, 200, 20,
+                new StringTextComponent(I18n.format(Names.Config.SAVE)), this::save));
         y += margin;
-        this.addButton(new Button(this.width / 2 - 100, y, 200, 20,
-                I18n.format("gui.done"), b -> mc.displayGuiScreen(parent)));
+        this.addWidget(new Button(width / 2 - 100, y, 200, 20,
+                new StringTextComponent(I18n.format("gui.done")), b -> mc.displayGuiScreen(parent)));
         y += margin;
-        this.addButton(new Button(this.width / 2 - 100, y, 200, 20,
-                I18n.format(Names.Config.OPEN_CONFIG_FILE), this::openConfigFile));
+        this.addWidget(new Button(width / 2 - 100, y, 200, 20,
+                new StringTextComponent(I18n.format(Names.Config.OPEN_CONFIG_FILE)), this::openConfigFile));
 
     }
 
@@ -131,6 +150,14 @@ public class ModGuiConfig extends Screen {
             onError.accept(e.getMessage());
         }
         return Optional.ofNullable(value);
+    }
+
+    private <T extends Widget> T addWidget(T widget) {
+        return super.func_230480_a_(widget);
+    }
+
+    private <T extends IGuiEventListener> T addChild(T item) {
+        return super.func_230481_d_(item);
     }
 
 }

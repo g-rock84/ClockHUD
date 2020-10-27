@@ -1,10 +1,9 @@
 package com.qkninja.clockhud.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Reference;
 import com.qkninja.clockhud.reference.Textures;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.world.World;
@@ -43,8 +42,12 @@ public class GuiClock extends AbstractGui {
         if (!ConfigValues.INS.guiActive.get() || event.isCancelable() || event.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE)
             return;
 
+        MatrixStack matrixStack = event.getMatrixStack();
+        matrixStack.push();
+
         this.mc.getTextureManager().bindTexture(Textures.Gui.HUD);
-        RenderSystem.scaled(ConfigValues.INS.scale.get(), ConfigValues.INS.scale.get(), ConfigValues.INS.scale.get());
+        float scale = ConfigValues.INS.scale.get().floatValue();
+        matrixStack.scale(scale, scale, scale);
 
         int xCoord;
         if (ConfigValues.INS.centerClock.get()) {
@@ -57,19 +60,24 @@ public class GuiClock extends AbstractGui {
         int startY = ConfigValues.INS.yCoord.get() + ICON_HEIGHT / 2 - BAR_HEIGHT / 2;
 
         // Draw bar
-        this.blit(startX, startY, 0, 0, BAR_LENGTH, BAR_HEIGHT);
+        // blit
+        this.func_238474_b_(matrixStack, startX, startY, 0, 0, BAR_LENGTH, BAR_HEIGHT);
 
         if (isDay()) // Draw sun
         {
-            this.blit(xCoord + getScaledTime(), ConfigValues.INS.yCoord.get(), 0, BAR_HEIGHT,
+            //blit
+            this.func_238474_b_(matrixStack, xCoord + getScaledTime(), ConfigValues.INS.yCoord.get(), 0, BAR_HEIGHT,
                     SUN_WIDTH, ICON_HEIGHT);
         } else // Draw moon
         {
-            this.blit(xCoord + (SUN_WIDTH - MOON_WIDTH) / 2 + getScaledTime(),
+            //blit
+            this.func_238474_b_(matrixStack, xCoord + (SUN_WIDTH - MOON_WIDTH) / 2 + getScaledTime(),
                     ConfigValues.INS.yCoord.get(), SUN_WIDTH, BAR_HEIGHT, MOON_WIDTH, ICON_HEIGHT);
         }
 
-        RenderSystem.scaled(1 / ConfigValues.INS.scale.get(), 1 / ConfigValues.INS.scale.get(), 1 / ConfigValues.INS.scale.get());
+        matrixStack.scale(1 / scale, 1 / scale, 1 / scale);
+
+        matrixStack.pop();
     }
 
     /**
