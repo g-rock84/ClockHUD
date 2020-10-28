@@ -1,6 +1,6 @@
 package com.qkninja.clockhud.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.qkninja.clockhud.reference.ConfigValues;
 import com.qkninja.clockhud.reference.Names;
 import com.qkninja.clockhud.reference.Reference;
@@ -40,6 +40,7 @@ public class GuiDayCount extends AbstractGui {
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
         if (ConfigValues.INS.showDayCount.get() && event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE &&
             (isRunning || isNewDay())) {
+
             long currentTime = System.nanoTime() / 1000000;
 
             if (isRunning && currentTime >= endAnimationTime) {
@@ -52,17 +53,22 @@ public class GuiDayCount extends AbstractGui {
                 endAnimationTime = currentTime + ANIMATION_TIME;
             }
 
+            MatrixStack matrixStack = event.getMatrixStack();
+            matrixStack.push();
+
             float scaleFactor = getScaleFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME);
             String dayString = formDayString();
 
-            RenderSystem.scalef(scaleFactor, scaleFactor, scaleFactor);
+            matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
             MainWindow mainWindow = event.getWindow();
             int alpha = Math.max(getOpacityFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME), 5);
             int color = (alpha << 24) | 0xffffff;
             float xPos = (mainWindow.getScaledWidth() - this.mc.fontRenderer.getStringWidth(dayString) * scaleFactor) / (2 * scaleFactor);
             float yPos = mainWindow.getScaledHeight() / 7F / scaleFactor;
-            this.mc.fontRenderer.drawString(dayString, xPos, yPos, color);
-            RenderSystem.scalef(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
+            //drawString
+            this.mc.fontRenderer.func_238421_b_(matrixStack, dayString, xPos, yPos, color);
+            matrixStack.scale(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
+            matrixStack.pop();
         }
     }
 

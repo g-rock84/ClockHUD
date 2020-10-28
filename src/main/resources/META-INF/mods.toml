@@ -1,9 +1,12 @@
 modLoader="javafml"
-loaderVersion="[31,)"
+loaderVersion="[34,)"
+# The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
+# Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
+license="All rights reserved"
 
 [[mods]]
 modId="clockhud"
-version="2.1.0"
+version="2.2.0"
 displayName="Clock HUD"
 #logoFile="examplemod.png"
 credits="Created by QKninja"
@@ -15,13 +18,13 @@ description='''
 [[dependencies.clockhud]]
     modId="forge"
     mandatory=true
-    versionRange="[31,)"
+    versionRange="[34,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.clockhud]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.3]"
     ordering="NONE"
     side="BOTH"
