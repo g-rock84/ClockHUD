@@ -57,9 +57,9 @@ public class GuiDayCount extends AbstractGui {
             matrixStack.push();
 
             float scaleFactor = getScaleFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME);
-            String dayString = formDayString();
-
             matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
+
+            String dayString = formDayString();
             MainWindow mainWindow = event.getWindow();
             int alpha = Math.max(getOpacityFactor((endAnimationTime - currentTime) / (float) ANIMATION_TIME), 5);
             int color = (alpha << 24) | 0xffffff;
@@ -67,7 +67,7 @@ public class GuiDayCount extends AbstractGui {
             float yPos = mainWindow.getScaledHeight() / 7F / scaleFactor;
             //drawString
             this.mc.fontRenderer.func_238421_b_(matrixStack, dayString, xPos, yPos, color);
-            matrixStack.scale(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
+            //matrixStack.scale(1 / scaleFactor, 1 / scaleFactor, 1 / scaleFactor);
             matrixStack.pop();
         }
     }

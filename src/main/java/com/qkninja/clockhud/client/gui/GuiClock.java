@@ -75,8 +75,7 @@ public class GuiClock extends AbstractGui {
                     ConfigValues.INS.yCoord.get(), SUN_WIDTH, BAR_HEIGHT, MOON_WIDTH, ICON_HEIGHT);
         }
 
-        matrixStack.scale(1 / scale, 1 / scale, 1 / scale);
-
+        //matrixStack.scale(1 / scale, 1 / scale, 1 / scale);
         matrixStack.pop();
     }
 
